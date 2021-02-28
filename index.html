@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <script src="main.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div class="content">
+
+        <div class="sidebar">
+            <span class="logo">
+                <p>SafTech</p>
+            </span>
+            <div class="menu">
+                <h3>Источники света</h3>
+                <ul class="lights">
+                    <li id="ray"><input type="radio" name="webpage" class="ray"/></li>
+                    <li id="beam"><input type="radio" name="webpage" class="beam"/></li>
+                    <li id="point_source"><input type="radio" name="webpage" class="point_source"/></li>
+                </ul>
+                <h3>Оптика</h3>
+                <ul class="optics">
+                    <li id="flat_mirror"><input type="radio" name="webpage" class="flat_mirror"/></li>
+                    <li id="coll_lens"><input type="radio" name="webpage" class="coll_lens"/></li>
+                    <li id="diff_lens"><input type="radio" name="webpage" class="diff_lens"/></li>
+                </ul>
+                <h3>Другое</h3>
+                <ul class="others">
+                    <li id="obstacle"><input type="radio" name="webpage" class="obstacle"/></li>
+                </ul>
+
+                <h3>Плотность лучей</h3>
+                <div class="slidecontainer">
+                    <input type="range" min="7" max="1000" value="1" class="slider" id="density_slider">
+                    <span id="density_value">7</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas">
+            <canvas id="canvas_id"></canvas>
+        </div>
+
+    </div>
+</body>
+</html>

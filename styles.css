@@ -1,0 +1,151 @@
+@font-face {
+  font-family: "logo";
+  src: url("fonts/logo-font.ttf");
+}
+@font-face {
+  font-family: "Clear Sans";
+  src: url("fonts/ClearSans-Regular.ttf");
+}
+*,
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: "Clear Sans";
+  color: white;
+}
+ul {
+  text-decoration: none;
+  flex-direction: column;
+  list-style: none;
+  background: #485054;
+  padding-left: 10px;
+}
+.content,
+.sidebar,
+.canvas,
+.logo,
+ul,
+.slidecontainer {
+  display: flex;
+  flex-shrink: 0;
+}
+.content {
+  flex-direction: row;
+  height: 100%;
+}
+.content .sidebar {
+  flex-basis: 15em;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-direction: column;
+  background: #485054;
+}
+.content .sidebar input[type=radio]:focus {
+  outline: none;
+}
+.content .sidebar input[type=radio]:checked {
+  color: white !important;
+  border-left: 5px solid #485054;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+.content .sidebar input[type=radio] {
+  width: 100%;
+  height: 100%;
+  -webkit-appearance: none;
+  user-select: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 1s ease;
+}
+.content .sidebar input[type=radio]:hover {
+  color: white;
+  border-left: 5px solid #485054;
+}
+.content .sidebar .ray:before {
+  content: "Луч";
+}
+.content .sidebar .beam:before {
+  content: "Пучок";
+}
+.content .sidebar .point_source:before {
+  content: "Точечный источник";
+}
+.content .sidebar .flat_mirror:before {
+  content: "Плоское зеркало";
+}
+.content .sidebar .coll_lens:before {
+  content: "Собирающая линза";
+}
+.content .sidebar .diff_lens:before {
+  content: "Рассеивающая линза";
+}
+.content .sidebar .obstacle:before {
+  content: "Препятствие";
+}
+.content .sidebar h3 {
+  user-select: none;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  font-size: 24px;
+  color: white;
+  cursor: default;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+.content .sidebar li {
+  user-select: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 7px;
+  transition: color 0.5s ease;
+}
+.content .sidebar .logo {
+  justify-content: center;
+  transition: all 0.5s ease;
+  cursor: default;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+  margin-bottom: 20px;
+}
+.content .sidebar .logo p {
+  user-select: none;
+  display: flex;
+  font-family: "logo";
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 50px;
+}
+.content .sidebar .logo:hover {
+  background: rgba(0, 0, 255, 0.5);
+  color: white;
+}
+.content .canvas {
+  flex-basis: 100%;
+}
+.content .canvas #canvas_id {
+  width: calc(100% + 1px);
+  height: calc(100% + 1px);
+}
+.content .slidecontainer {
+  padding-left: 10px;
+  padding-top: 10px;
+  width: 100%;
+}
+.content .slidecontainer #density_slider {
+  width: 80%;
+  outline: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.content .slidecontainer #density_slider:hover {
+  opacity: 1;
+}
+.content .slidecontainer #density_value {
+  padding: 0 0 2px 5px;
+}

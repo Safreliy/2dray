@@ -1,0 +1,11 @@
+<svg width="210" height="210" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <ellipse stroke-width="3" ry="102" rx="102" id="svg_1" cy="106.5" cx="104.5" opacity="undefined" stroke="#000" fill="#e5e5e5"/>
+  <path stroke-width="3" stroke="#000" id="svg_2" d="m41.80496,116.33513c104.72841,-3.44992 -26.71643,179.39568 104.72841,-3.44992c131.44485,-182.8456 -209.45683,6.89983 -104.72841,3.44992z" opacity="undefined" fill="#cccccc"/>
+  <path stroke="#000" id="svg_4" d="m24.48316,150.67724c42.54125,-103.52814 -25.64987,-195.73288 115.11161,-52.57288c140.76148,143.16 -118.23965,-37.20542 -115.11161,52.57288z" opacity="undefined" stroke-opacity="null" stroke-dasharray="null" stroke-width="2" fill="#7f7f7f"/>
+  <path stroke="#000000" id="svg_5" d="m24.88212,175.5c34.70452,-128.03541 87.41596,-226.14399 141.57584,-85.77875c54.15989,140.36523 -26.60486,-71.15737 -55.11006,2.92428c-28.5052,74.08165 -133.02428,-162.78468 -86.46578,82.85448z" opacity="undefined" stroke-dasharray="null" stroke-width="2" fill="#ffffff"/>
+  <text stroke-dasharray="null" stroke="#d69900" transform="matrix(2.1115386109019254,0,0,2.737037479063765,-173.51347155117998,-463.9121052618147) " font-style="normal" font-weight="normal" xml:space="preserve" text-anchor="start" font-family="'Montserrat Thin'" font-size="24" id="svg_10" y="215.78889" x="91.52602" opacity="undefined" fill="#ce7b00">SafTech</text>
+ </g>
+
+</svg>

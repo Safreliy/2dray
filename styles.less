@@ -1,0 +1,165 @@
+@font-face {
+  font-family: "logo";
+  src: url("fonts/logo-font.ttf");
+}
+@font-face {
+  font-family: "Clear Sans";
+  src: url("fonts/ClearSans-Regular.ttf");
+}
+
+@sidebarBg: #485054;
+@ulBg: #485054;//#546151;
+
+*, html, body {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: "Clear Sans";
+  color: white;
+}
+
+ul {
+  text-decoration: none;
+  flex-direction: column;
+  list-style: none;
+  background: @ulBg;
+  padding-left: 10px;
+}
+
+.content, .sidebar, .canvas, .logo, ul, .slidecontainer{
+  display: flex;
+  flex-shrink: 0;
+}
+
+.content {
+  flex-direction: row;
+  height: 100%;
+
+  .sidebar {
+    flex-basis: 15em;
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex-direction: column;
+    background: @sidebarBg;
+
+    input[type=radio]:focus {
+      outline: none;
+    }
+    input[type=radio]:checked
+    {
+      color: white !important;
+      border-left: 5px solid @ulBg;
+      border-bottom: 1px solid fade(white, 50%);
+    }
+
+    input[type=radio]
+    {
+      width: 100%;
+      height: 100%;
+      -webkit-appearance:none;
+      user-select: none;
+      color: fade(white, 70%);
+      font-size:20px;
+      cursor: pointer;
+      transition: color 1s ease;
+      &:hover {
+        color: white;
+        border-left: 5px solid @ulBg;
+      }
+    }
+    .ray:before {
+      content: "Луч";
+    }
+    .beam:before {
+      content:"Пучок";
+    }
+    .point_source:before {
+      content: "Точечный источник";
+    }
+    .flat_mirror:before {
+      content: "Плоское зеркало";
+    }
+    .coll_lens:before {
+      content: "Собирающая линза";
+    }
+    .diff_lens:before {
+      content: "Рассеивающая линза";
+    }
+    .obstacle:before {
+      content: "Препятствие";
+    }
+
+    h3 {
+      user-select: none;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      padding-left: 10px;
+      font-size: 24px;
+      color: white;
+      cursor: default;
+      border-bottom: 1px solid fade(white, 50%);
+    }
+
+    li {
+      user-select: none;
+      color: fade(white, 70%);
+      font-size:20px;
+      cursor: pointer;
+      padding: 7px;
+      transition: color 0.5s ease;
+    }
+
+    .logo {
+      justify-content: center;
+      transition: all .5s ease;
+      cursor: default;
+      border-bottom: 1px solid fade(white, 90%);
+      margin-bottom: 20px;
+      p {
+        user-select: none;
+        display: flex;
+        font-family: "logo";
+        color: fade(white, 90%);
+        font-size:50px;
+      }
+      &:hover {
+        background: fade(blue, 50%);
+        color: white;
+      }
+    }
+  }
+
+  .canvas {
+    flex-basis: 100%;
+    #canvas_id {
+      width: calc(100% + 1px);
+      height: calc(100% + 1px);
+    }
+  }
+
+  .slidecontainer {
+    padding-left: 10px;
+    padding-top: 10px;
+    width: 100%;
+
+    #density_slider {
+      width: 80%;
+      outline: none;
+      opacity: 0.7;
+      transition: opacity .2s;
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    #density_value {
+      padding: 0 0 2px 5px;
+    }
+  }
+
+}
+
