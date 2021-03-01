@@ -49,13 +49,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     canvas.addEventListener("mouseup", (event) => {
-        ctx.strokeStyle = "#e3e3e3";
+        //ctx.strokeStyle = "#e3e3e3";
         switch (mode) {
             case 3:
                 point_sources.push([event.pageX - canvas_offset.x, event.pageY - canvas_offset.y]);
                 ctx.moveTo(event.pageX - canvas_offset.x,event.pageY - canvas_offset.y);
                 let step = 2 * Math.PI / parseInt(density_value.innerHTML, 10);
                 for (let i = 0; i < 2 * Math.PI; i += step) {
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${1/point_sources.length})`;//
                     ctx.moveTo(event.pageX - canvas_offset.x,event.pageY - canvas_offset.y);
                     ctx.lineTo(event.pageX - canvas_offset.x + 1000*Math.sin(i), event.pageY - canvas_offset.y + 1000*Math.cos(i));
                 }
@@ -65,6 +66,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     function update_sources() {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -75,8 +78,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 ctx.lineTo(source[0] + 1000*Math.sin(i), source[1] + 1000*Math.cos(i));
                 ctx.moveTo(source[0],source[1]);
             }
-            ctx.stroke();
         });
+        ctx.stroke();
     }
 
 
