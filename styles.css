@@ -40,7 +40,7 @@ ul,
   height: 100%;
 }
 .content .sidebar {
-  flex-basis: 15em;
+  flex-basis: 18em;
   overflow-x: hidden;
   overflow-y: auto;
   flex-direction: column;
@@ -137,15 +137,18 @@ ul,
   padding-top: 10px;
   width: 100%;
 }
-.content .slidecontainer #density_slider {
+.content .slidecontainer #density_slider,
+.content .slidecontainer #brightness_slider {
   width: 80%;
   outline: none;
   opacity: 0.7;
   transition: opacity 0.2s;
 }
-.content .slidecontainer #density_slider:hover {
+.content .slidecontainer #density_slider:hover,
+.content .slidecontainer #brightness_slider:hover {
   opacity: 1;
 }
-.content .slidecontainer #density_value {
+.content .slidecontainer #density_value,
+.content .slidecontainer #brightness_value {
   padding: 0 0 2px 5px;
 }
