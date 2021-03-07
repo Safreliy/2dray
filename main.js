@@ -1,11 +1,18 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     let mode;
+    let brightness = 50;
+    let density = 7;
     let point_sources = [];
+
     let density_value = document.getElementById('density_value');
     let density_slider = document.getElementById('density_slider');
+    let brightness_value = document.getElementById('brightness_value');
+    let brightness_slider = document.getElementById('brightness_slider');
+
     let canvas_wrapper = document.getElementsByClassName('canvas');
     let canvas = document.getElementById('canvas_id');
     let ctx = canvas.getContext("2d");
+
 
     let ray_btn = document.getElementById("ray");
     let beam_btn = document.getElementById("beam");
@@ -22,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     flat_mirror_btn.addEventListener("mouseup", (event)=>{mode=4});
     coll_lens_btn.addEventListener("mouseup", (event)=>{mode=5});
     diff_lens_btn.addEventListener("mouseup", (event)=>{mode=6});
+    obstacle_btn.addEventListener("mouseup", (event)=>{mode=7});
 
     let canvas_offset = canvas.getBoundingClientRect();
 
@@ -34,9 +42,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
     canvas.height = height;
 
     density_slider.addEventListener("input",(event) => {
-        density_value.innerHTML = event.target.value;
+        density = event.target.value;
+        density_value.innerHTML = density;
         update_sources();
     });
+    brightness_slider.addEventListener("input",(event) => {
+        brightness = event.target.value;
+        brightness_value.innerHTML = `${brightness}%`;
+        update_sources();
+    });
+
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     canvas.addEventListener("mousemove", (event) => {
@@ -49,16 +64,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     canvas.addEventListener("mouseup", (event) => {
-        //ctx.strokeStyle = "#e3e3e3";
         switch (mode) {
             case 3:
                 point_sources.push([event.pageX - canvas_offset.x, event.pageY - canvas_offset.y]);
                 ctx.moveTo(event.pageX - canvas_offset.x,event.pageY - canvas_offset.y);
-                let step = 2 * Math.PI / parseInt(density_value.innerHTML, 10);
+                let step = 2 * Math.PI / parseInt(density, 10);
                 for (let i = 0; i < 2 * Math.PI; i += step) {
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${1/point_sources.length})`;//
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;//
                     ctx.moveTo(event.pageX - canvas_offset.x,event.pageY - canvas_offset.y);
-                    ctx.lineTo(event.pageX - canvas_offset.x + 1000*Math.sin(i), event.pageY - canvas_offset.y + 1000*Math.cos(i));
+                    ctx.lineTo(event.pageX - canvas_offset.x + 5000*Math.sin(i), event.pageY - canvas_offset.y + 5000*Math.cos(i));
                 }
                 break;
         }
@@ -71,11 +85,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
         ctx.beginPath();
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
         point_sources.forEach((source)=>{
             ctx.moveTo(source[0],source[1]);
             let step = 2 * Math.PI / parseInt(density_value.innerHTML, 10);
             for (let i = 0; i < 2 * Math.PI; i += step) {
-                ctx.lineTo(source[0] + 1000*Math.sin(i), source[1] + 1000*Math.cos(i));
+                ctx.lineTo(source[0] + 5000*Math.sin(i), source[1] + 5000*Math.cos(i));
                 ctx.moveTo(source[0],source[1]);
             }
         });
