@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let density = 7;
     let point_sources = [];
     let obstacles = [];
-    let num_of_obstacles = 0;
+    let rays = [];
     let point_buffer = [];
     let mousePosition = {
         x: 0,
@@ -160,17 +160,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function update_sources() {
-        ctx1.beginPath();
         ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
         point_sources.forEach((source)=>{
-            ctx1.moveTo(source[0],source[1]);
             let step = 2 * Math.PI / parseInt(density_value.innerHTML, 10);
             for (let i = 0; i < 2 * Math.PI; i += step) {
-                ctx1.lineTo(source[0] + 5000*Math.sin(i), source[1] + 5000*Math.cos(i));
-                ctx1.moveTo(source[0],source[1]);
+                renderRay([
+                    {x: source[0], y: source[1]},
+                    {x: source[0] + Math.sin(i)*5000, y: source[1] + Math.cos(i)*5000}
+                ]);
             }
         });
-        ctx1.stroke();
     }
 
     function renderAll() {
@@ -179,7 +178,61 @@ document.addEventListener("DOMContentLoaded", function(event) {
         render_obstacle();
     }
 
-    function renderRay(x1, y1 ,x2, y2) {
+    function renderRay(ray) {
+        let minDistance = Infinity;
+        let minIntersect;
+        obstacles.forEach((obstacle)=>{
+            let intersect = checkIntersect(obstacle, ray);
+            if (intersect) {
+                let dist = distance(ray[0].x, ray[0].y, intersect.x, intersect.y);
+                if (minDistance > dist) {
+                    minDistance = dist;
+                    minIntersect = intersect;
+                }
+            }
+        });
+        ctx1.beginPath();
+        if(minIntersect) {
+            ctx1.moveTo(ray[0].x, ray[0].y);
+            ctx1.lineTo(minIntersect.x, minIntersect.y);
+        }
+        else {
+            ctx1.moveTo(ray[0].x, ray[0].y);
+            ctx1.lineTo(ray[1].x, ray[1].y);
+        }
+        ctx1.stroke();
+    }
 
+    function distance(x1, y1, x2, y2) {
+        return Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+    }
+
+    function checkIntersect(obstacle, ray) {
+        const x1 = obstacle[0].x;
+        const y1 = obstacle[0].y;
+        const x2 = obstacle[1].x;
+        const y2 = obstacle[1].y;
+
+        const x3 = ray[0].x;
+        const y3 = ray[0].y;
+        const x4 = ray[1].x;
+        const y4 = ray[1].y;
+
+        const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        if (den == 0) {
+            return;
+        }
+
+        const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
+        const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
+        if (t > 0 && t < 1 && u > 0) {
+            let intersect = {
+                x: x1 + t * (x2 - x1),
+                y: y1 + t * (y2 - y1)
+            }
+            return intersect;
+        } else {
+            return;
+        }
     }
 });
