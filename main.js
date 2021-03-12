@@ -53,12 +53,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
     density_slider.addEventListener("input",(event) => {
         density = event.target.value;
         density_value.innerHTML = density;
-        update_sources();
+        renderAll();
     });
     brightness_slider.addEventListener("input",(event) => {
         brightness = event.target.value;
         brightness_value.innerHTML = `${brightness}%`;
-        update_sources();
+        renderAll()
     });
 
     clear();
@@ -68,34 +68,53 @@ document.addEventListener("DOMContentLoaded", function(event) {
             x: event.pageX - canvas_offset.x,
             y: event.pageY - canvas_offset.y
         }
+
+        ctx.beginPath();
         clear();
+        draw_point(mousePosition.x, mousePosition.y);
+        ctx.stroke();
+
 
         ctx.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
-        ctx.beginPath();
-        draw_point(mousePosition.x, mousePosition.y);
-        render_obstacle();
-
         if(first_step_obstacle) {
+            ctx.beginPath();
             draw_point(point_buffer[0].x, point_buffer[0].y);
             ctx.moveTo(point_buffer[0].x, point_buffer[0].y);
             ctx.lineTo(mousePosition.x, mousePosition.y);
+            ctx.stroke();
         }
-        ctx.stroke();
+
     });
+
 
     canvas.addEventListener("mouseup", (event) => {
         switch (mode) {
+            case 1:
+                add_ray();
+                break;
+            case 2:
+                add_beam;
+                break;
             case 3:
-                point_source_drawing(event);
+                add_point_source(event);
+                break;
+            case 4:
+                add_flat_mirror();
+                break;
+            case 5:
+                add_coll_lens();
+                break;
+            case 6:
+                add_diff_lens();
                 break;
             case 7:
-                draw_obstacle(event);
+                add_obstacle(event);
                 break;
         }
-        ctx.stroke();
+        renderAll();
     });
 
-    function draw_obstacle(event) {
+    function add_obstacle(event) {
         if(!first_step_obstacle) {
 
             first_step_obstacle = true;
@@ -109,16 +128,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
     }
 
-    function point_source_drawing(event) {
-        clear();
+    function add_point_source(event) {
         point_sources.push([mousePosition.x, mousePosition.y]);
-        ctx.moveTo(mousePosition.x,mousePosition.y);
-        let step = 2 * Math.PI / parseInt(density, 10);
-        ctx.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
-        for (let i = 0; i < 2 * Math.PI; i += step) {
-            ctx.moveTo(mousePosition.x,mousePosition.y);
-            ctx.lineTo(mousePosition.x + 5000*Math.sin(i), mousePosition.y + 5000*Math.cos(i));
-        }
     }
 
     function render_obstacle() {
@@ -141,9 +152,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function update_sources() {
-        clear();
-        ctx.beginPath();
-        clear();
         ctx.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
         point_sources.forEach((source)=>{
             ctx.moveTo(source[0],source[1]);
@@ -153,8 +161,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 ctx.moveTo(source[0],source[1]);
             }
         });
+    }
+
+    function renderAll() {
+        clear();
+        ctx.beginPath();
+        clear();
+
+        update_sources();
+        render_obstacle();
+
         ctx.stroke();
     }
 
+    function renderRay(x1, y1 ,x2, y2) {
 
+    }
 });
