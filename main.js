@@ -19,8 +19,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let brightness_slider = document.getElementById('brightness_slider');
 
     let canvas_wrapper = document.getElementsByClassName('canvas');
-    let canvas = document.getElementById('canvas_id');
-    let ctx = canvas.getContext("2d");
+    let layer1 = document.getElementById('layer1');
+    let layer2 = document.getElementById('layer2');
+    let ctx1 = layer1.getContext("2d");
+    let ctx2 = layer2.getContext("2d");
 
 
     let ray_btn = document.getElementById("ray");
@@ -40,15 +42,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
     diff_lens_btn.addEventListener("mouseup", (event)=>{mode=6});
     obstacle_btn.addEventListener("mouseup", (event)=>{mode=7});
 
-    let canvas_offset = canvas.getBoundingClientRect();
+    let canvas_offset = layer1.getBoundingClientRect();
 
 
     let cs = getComputedStyle(canvas_wrapper[0]);
     let width = parseInt(cs.getPropertyValue('width'), 10);
     let height = parseInt(cs.getPropertyValue('height'), 10);
 
-    canvas.width = width;
-    canvas.height = height;
+    layer1.width = width;
+    layer1.height = height;
+    layer2.width = width;
+    layer2.height = height;
 
     density_slider.addEventListener("input",(event) => {
         density = event.target.value;
@@ -61,33 +65,34 @@ document.addEventListener("DOMContentLoaded", function(event) {
         renderAll()
     });
 
-    clear();
+    clear(ctx2);
 
-    canvas.addEventListener("mousemove", (event) => {
+    layer1.addEventListener("mousemove", (event) => {
         mousePosition = {
             x: event.pageX - canvas_offset.x,
             y: event.pageY - canvas_offset.y
         }
 
-        ctx.beginPath();
-        clear();
-        draw_point(mousePosition.x, mousePosition.y);
-        ctx.stroke();
+        ctx2.beginPath();
+        clear(ctx2);
+        draw_point(mousePosition.x, mousePosition.y, ctx2);
+        ctx2.stroke();
 
 
-        ctx.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+        ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+        ctx2.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
         if(first_step_obstacle) {
-            ctx.beginPath();
-            draw_point(point_buffer[0].x, point_buffer[0].y);
-            ctx.moveTo(point_buffer[0].x, point_buffer[0].y);
-            ctx.lineTo(mousePosition.x, mousePosition.y);
-            ctx.stroke();
+            ctx2.beginPath();
+            draw_point(point_buffer[0].x, point_buffer[0].y, ctx2);
+            ctx2.moveTo(point_buffer[0].x, point_buffer[0].y);
+            ctx2.lineTo(mousePosition.x, mousePosition.y);
+            ctx2.stroke();
         }
 
     });
 
 
-    canvas.addEventListener("mouseup", (event) => {
+    layer1.addEventListener("mouseup", (event) => {
         switch (mode) {
             case 1:
                 add_ray();
@@ -133,45 +138,45 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function render_obstacle() {
+        ctx1.beginPath();
+        ctx1.strokeStyle = `red`;
         obstacles.forEach((obstacle)=>{
-           draw_point(obstacle[0].x, obstacle[0].y);
-           draw_point(obstacle[1].x, obstacle[1].y);
-           ctx.moveTo(obstacle[0].x, obstacle[0].y);
-           ctx.lineTo(obstacle[1].x, obstacle[1].y);
+           draw_point(obstacle[0].x, obstacle[0].y, ctx1);
+           draw_point(obstacle[1].x, obstacle[1].y, ctx1);
+           ctx1.moveTo(obstacle[0].x, obstacle[0].y);
+           ctx1.lineTo(obstacle[1].x, obstacle[1].y);
         });
+        ctx1.stroke();
     }
 
-    function draw_point(x, y) {
+    function draw_point(x, y, ctx) {
         ctx.fillStyle = "red";
         ctx.fillRect(x - 2, y - 2, 4,  4);
     }
 
-    function clear() {
+    function clear(ctx) {
         ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, layer1.width, layer1.height);
     }
 
     function update_sources() {
-        ctx.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+        ctx1.beginPath();
+        ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
         point_sources.forEach((source)=>{
-            ctx.moveTo(source[0],source[1]);
+            ctx1.moveTo(source[0],source[1]);
             let step = 2 * Math.PI / parseInt(density_value.innerHTML, 10);
             for (let i = 0; i < 2 * Math.PI; i += step) {
-                ctx.lineTo(source[0] + 5000*Math.sin(i), source[1] + 5000*Math.cos(i));
-                ctx.moveTo(source[0],source[1]);
+                ctx1.lineTo(source[0] + 5000*Math.sin(i), source[1] + 5000*Math.cos(i));
+                ctx1.moveTo(source[0],source[1]);
             }
         });
+        ctx1.stroke();
     }
 
     function renderAll() {
-        clear();
-        ctx.beginPath();
-        clear();
-
+        ctx1.clearRect(0, 0, layer1.width, layer2.height);
         update_sources();
         render_obstacle();
-
-        ctx.stroke();
     }
 
     function renderRay(x1, y1 ,x2, y2) {

@@ -128,7 +128,9 @@ ul,
 .content .canvas {
   flex-basis: 100%;
 }
-.content .canvas #canvas_id {
+.content .canvas #layer1,
+.content .canvas layer2 {
+  position: absolute;
   width: calc(100% + 1px);
   height: calc(100% + 1px);
 }
