@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let first_step_obstacle = false;
     let density = 7;
     let point_sources = [];
+    let flat_mirrors = [];
     let obstacles = [];
     let rays = [];
     let point_buffer = [];
@@ -119,9 +120,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
         renderAll();
     });
 
+    function add_flat_mirror() {
+        if(!first_step_obstacle) {
+            first_step_obstacle = true;
+            point_buffer.push(mousePosition);
+        }
+        else {
+            point_buffer.push(mousePosition);
+            flat_mirrors.push(point_buffer);
+            first_step_obstacle = false;
+            point_buffer = [];
+        }
+    }
+
     function add_obstacle(event) {
         if(!first_step_obstacle) {
-
             first_step_obstacle = true;
             point_buffer.push(mousePosition);
         }
@@ -137,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         point_sources.push([mousePosition.x, mousePosition.y]);
     }
 
-    function render_obstacle() {
+    function render_obstacles() {
         ctx1.beginPath();
         ctx1.strokeStyle = `red`;
         obstacles.forEach((obstacle)=>{
@@ -145,6 +158,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
            draw_point(obstacle[1].x, obstacle[1].y, ctx1);
            ctx1.moveTo(obstacle[0].x, obstacle[0].y);
            ctx1.lineTo(obstacle[1].x, obstacle[1].y);
+        });
+        ctx1.stroke();
+    }
+
+    function render_flat_mirrors() {
+        ctx1.beginPath();
+        ctx1.strokeStyle = `blue`;
+        flat_mirrors.forEach((mirror)=>{
+            draw_point(mirror[0].x, mirror[0].y, ctx1);
+            draw_point(mirror[1].x, mirror[1].y, ctx1);
+            ctx1.moveTo(mirror[0].x, mirror[0].y);
+            ctx1.lineTo(mirror[1].x, mirror[1].y);
         });
         ctx1.stroke();
     }
@@ -175,12 +200,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function renderAll() {
         ctx1.clearRect(0, 0, layer1.width, layer2.height);
         update_sources();
-        render_obstacle();
+        render_flat_mirrors();
+        render_obstacles();
     }
 
     function renderRay(ray) {
         let minDistance = Infinity;
         let minIntersect;
+        let currentMirror;
         obstacles.forEach((obstacle)=>{
             let intersect = checkIntersect(obstacle, ray);
             if (intersect) {
@@ -191,16 +218,61 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 }
             }
         });
+        flat_mirrors.forEach((mirror)=>{
+            let intersect = checkIntersect(mirror, ray);
+            if (intersect) {
+                let dist = distance(ray[0].x, ray[0].y, intersect.x, intersect.y);
+                if (minDistance > dist) {
+                    minDistance = dist;
+                    minIntersect = intersect;
+                    currentMirror = mirror;
+                }
+            }
+        });
         ctx1.beginPath();
         if(minIntersect) {
             ctx1.moveTo(ray[0].x, ray[0].y);
             ctx1.lineTo(minIntersect.x, minIntersect.y);
+            ctx1.stroke();
+            if(currentMirror) {
+                let n = getNormalVector({
+                    x:currentMirror[1].y - currentMirror[0].y,
+                    y:currentMirror[1].x - currentMirror[0].x
+                });
+                let l = {
+                    x: (ray[1].x - ray[0].x),
+                    y: (ray[1].y - ray[0].y)
+                }
+                let ln = dotProduct(l,n);
+                renderRay([
+                    minIntersect,
+                    {
+                        x: l.x - 2 * n.x*ln,
+                        y: l.y - 2 * n.y*ln
+                    }
+                ]);
+            }
         }
         else {
             ctx1.moveTo(ray[0].x, ray[0].y);
             ctx1.lineTo(ray[1].x, ray[1].y);
+            ctx1.stroke();
         }
-        ctx1.stroke();
+    }
+
+    function dotProduct(vec1, vec2) {
+        return vec1.x*vec2.x + vec1.y*vec2.y;
+    }
+
+    function getNormalVector(vec) {
+        let n = {
+            x: -vec.y/vec.x,
+            y: 1
+        }
+        return ({
+            x: n.x/dotProduct(n,n),
+            y: n.y/dotProduct(n,n)
+        });
     }
 
     function distance(x1, y1, x2, y2) {
