@@ -55,6 +55,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     layer2.width = width;
     layer2.height = height;
 
+    add_borders();
+
     density_slider.addEventListener("input",(event) => {
         density = event.target.value;
         density_value.innerHTML = density;
@@ -144,6 +146,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
             first_step_obstacle = false;
             point_buffer = [];
         }
+    }
+
+    function add_borders() {
+
+        obstacles.push([
+            {x:-1,y:-1},
+            {x:-1,y:layer1.height}]);
+        obstacles.push([
+            {x:-1,y:-1},
+            {x:layer1.width,y:-1}]);
+        obstacles.push([
+            {x:-1,y:layer1.height},
+            {x:layer1.width,y:layer1.height}]);
+        obstacles.push([
+            {x:layer1.width,y:-1},
+            {x:layer1.width,y:layer1.height}]);
     }
 
     function add_point_source(event) {
@@ -236,13 +254,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
             ctx1.stroke();
             if(currentMirror) {
                 let n = getNormalVector({
-                    x:currentMirror[1].y - currentMirror[0].y,
-                    y:currentMirror[1].x - currentMirror[0].x
+                    x:currentMirror[1].x - currentMirror[0].x,
+                    y:currentMirror[1].y - currentMirror[0].y
                 });
                 let l = {
                     x: (ray[1].x - ray[0].x),
                     y: (ray[1].y - ray[0].y)
-                }
+                };
+
                 let ln = dotProduct(l,n);
                 renderRay([
                     minIntersect,
