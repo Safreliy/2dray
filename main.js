@@ -6,12 +6,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let point_sources = [];
     let flat_mirrors = [];
     let obstacles = [];
+    let beams = [];
     let rays = [];
     let point_buffer = [];
     let mousePosition = {
         x: 0,
         y: 0
-    }
+    };
     
 
     let density_value = document.getElementById('density_value');
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 add_ray();
                 break;
             case 2:
-                add_beam;
+                add_beam();
                 break;
             case 3:
                 add_point_source(event);
@@ -122,34 +123,36 @@ document.addEventListener("DOMContentLoaded", function(event) {
         renderAll();
     });
 
-    function add_flat_mirror() {
+    function add_two_point_entity (arr) {
         if(!first_step_obstacle) {
             first_step_obstacle = true;
             point_buffer.push(mousePosition);
         }
         else {
             point_buffer.push(mousePosition);
-            flat_mirrors.push(point_buffer);
+            arr.push(point_buffer);
             first_step_obstacle = false;
             point_buffer = [];
         }
     }
 
-    function add_obstacle(event) {
-        if(!first_step_obstacle) {
-            first_step_obstacle = true;
-            point_buffer.push(mousePosition);
-        }
-        else {
-            point_buffer.push(mousePosition);
-            obstacles.push(point_buffer);
-            first_step_obstacle = false;
-            point_buffer = [];
-        }
+    function add_ray() {
+        add_two_point_entity(rays);
+    }
+
+    function add_flat_mirror() {
+        add_two_point_entity(flat_mirrors);
+    }
+
+    function add_obstacle() {
+        add_two_point_entity(obstacles);
+    }
+
+    function add_beam() {
+        add_two_point_entity(beams);
     }
 
     function add_borders() {
-
         obstacles.push([
             {x:-1,y:-1},
             {x:-1,y:layer1.height}]);
@@ -213,6 +216,51 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 ]);
             }
         });
+        rays.forEach((source)=>{
+            ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+            draw_point(source[0].x, source[0].y, ctx1);
+            renderRay(source);
+        });
+        beams.forEach((source)=>{
+            draw_point(source[0].x, source[0].y, ctx1);
+            draw_point(source[1].x, source[1].y, ctx1);
+            ctx1.strokeStyle = "gray"
+            ctx1.moveTo(source[0].x, source[0].y);
+            ctx1.lineTo(source[1].x, source[1].y);
+            ctx1.stroke();
+            ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+            let numOfRays = parseInt(density_value.innerHTML, 10);
+            let vector = {
+                x: (source[1].x - source[0].x) / numOfRays,
+                y: (source[1].y - source[0].y) / numOfRays
+            }
+            let length = lengthVec(vector);
+            let step = length / numOfRays;
+
+            let normal = getNormalVector(vector);
+            let checkNormalDirection = normal.x * vector.y - normal.y * vector.x;
+
+            if (checkNormalDirection > 0) {
+                normal = {
+                    x: -normal.x,
+                    y: -normal.y
+                };
+            }
+            for (let i = 0; i < numOfRays; i ++) {
+                let start = {
+                    x: source[0].x + vector.x*i,
+                    y: source[0].y + vector.y*i
+                };
+                let end = {
+                    x: start.x + normal.x,
+                    y: start.y + normal.y
+                }
+                renderRay([
+                    start,
+                    end
+                ]);
+            }
+        });
     }
 
     function renderAll() {
@@ -258,16 +306,48 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     y:currentMirror[1].y - currentMirror[0].y
                 });
                 let l = {
-                    x: (ray[1].x - ray[0].x),
-                    y: (ray[1].y - ray[0].y)
+                    x: (ray[0].x - ray[1].x),
+                    y: (ray[0].y - ray[1].y)
                 };
 
                 let ln = dotProduct(l,n);
+                if(ln < 0) {
+                    n = {
+                        x: -n.x,
+                        y: -n.y
+                    };
+                    ln = -ln;
+                }
+
+                // if (ray[0].x > minIntersect.x) {
+                //    minIntersect.x -= 10*;
+                // }
+                // else {
+                //     minIntersect.x += 10;
+                // }
+                // if (ray[0].y < minIntersect.y) {
+                //     minIntersect.y -= 10;
+                // }
+                // else {
+                //     minIntersect.y += 10;
+                // }
+
+                moveTo(minIntersect.x, minIntersect.y)
+                ctx1.lineTo(minIntersect.x + n.x*20, minIntersect.y + n.y*20);
+                ctx1.stroke();
+
+                let resVector = normalize({
+                    x: -l.x + 2 * n.x * ln,
+                    y: -l.y + 2 * n.y * ln
+                });
                 renderRay([
-                    minIntersect,
                     {
-                        x: l.x - 2 * n.x*ln,
-                        y: l.y - 2 * n.y*ln
+                      x: minIntersect.x + resVector.x*5,
+                      y: minIntersect.y + resVector.y*5
+                    },
+                    {
+                        x: resVector.x*10 + minIntersect.x,
+                        y: resVector.y*10 + minIntersect.y
                     }
                 ]);
             }
@@ -279,6 +359,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
     }
 
+    function normalize(vec) {
+        let length = lengthVec(vec);
+        return({
+            x: vec.x / length,
+            y: vec.y / length
+        });
+    }
     function dotProduct(vec1, vec2) {
         return vec1.x*vec2.x + vec1.y*vec2.y;
     }
@@ -288,14 +375,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
             x: -vec.y/vec.x,
             y: 1
         }
-        return ({
-            x: n.x/dotProduct(n,n),
-            y: n.y/dotProduct(n,n)
-        });
+        return (normalize(n));
     }
 
     function distance(x1, y1, x2, y2) {
         return Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+    }
+
+    function lengthVec(vec) {
+        return Math.sqrt(dotProduct(vec,vec));
     }
 
     function checkIntersect(obstacle, ray) {
