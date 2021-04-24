@@ -319,23 +319,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     ln = -ln;
                 }
 
-                // if (ray[0].x > minIntersect.x) {
-                //    minIntersect.x -= 10*;
-                // }
-                // else {
-                //     minIntersect.x += 10;
-                // }
-                // if (ray[0].y < minIntersect.y) {
-                //     minIntersect.y -= 10;
-                // }
-                // else {
-                //     minIntersect.y += 10;
-                // }
-
-                moveTo(minIntersect.x, minIntersect.y)
-                ctx1.lineTo(minIntersect.x + n.x*20, minIntersect.y + n.y*20);
-                ctx1.stroke();
-
                 let resVector = normalize({
                     x: -l.x + 2 * n.x * ln,
                     y: -l.y + 2 * n.y * ln

@@ -89,6 +89,10 @@ ul,
 .content .sidebar .obstacle:before {
   content: "Препятствие";
 }
+.content .sidebar #coll_lens,
+.content .sidebar #diff_lens {
+  display: none;
+}
 .content .sidebar h3 {
   user-select: none;
   margin-top: 10px;
