@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let ctx2 = layer2.getContext("2d");
 
 
+
     let ray_btn = document.getElementById("ray");
     let beam_btn = document.getElementById("beam");
     let point_btn = document.getElementById("point_source");
@@ -93,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
         ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+        ctxSVG.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
         ctx2.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
         if(first_step_obstacle) {
             ctx2.beginPath();
@@ -181,9 +183,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function render_obstacles() {
-        ctxSVG.beginPath();
-        ctxSVG.strokeStyle = `red`;
-
         ctx1.beginPath();
         ctx1.strokeStyle = `red`;
         obstacles.forEach((obstacle)=>{
@@ -191,13 +190,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
            draw_point(obstacle[1].x, obstacle[1].y, ctx1);
            ctx1.moveTo(obstacle[0].x, obstacle[0].y);
            ctx1.lineTo(obstacle[1].x, obstacle[1].y);
+           ctx1.stroke();
+        });
+
+        ctxSVG.beginPath();
+        ctxSVG.strokeStyle = `red`;
+        obstacles.forEach((obstacle)=>{
             draw_point(obstacle[0].x, obstacle[0].y, ctxSVG);
             draw_point(obstacle[1].x, obstacle[1].y, ctxSVG);
             ctxSVG.moveTo(obstacle[0].x, obstacle[0].y);
             ctxSVG.lineTo(obstacle[1].x, obstacle[1].y);
+            ctxSVG.stroke();
         });
-        ctx1.stroke();
-        ctxSVG.stroke();
     }
 
     function render_flat_mirrors() {
@@ -208,8 +212,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
             draw_point(mirror[1].x, mirror[1].y, ctx1);
             ctx1.moveTo(mirror[0].x, mirror[0].y);
             ctx1.lineTo(mirror[1].x, mirror[1].y);
+            ctx1.stroke();
         });
-        ctx1.stroke();
+
+        ctxSVG.beginPath();
+        ctxSVG.strokeStyle = `blue`;
+        flat_mirrors.forEach((mirror)=>{
+            draw_point(mirror[0].x, mirror[0].y, ctxSVG);
+            draw_point(mirror[1].x, mirror[1].y, ctxSVG);
+            ctxSVG.moveTo(mirror[0].x, mirror[0].y);
+            ctxSVG.lineTo(mirror[1].x, mirror[1].y);
+            ctxSVG.stroke();
+        });
+
     }
 
     function draw_point(x, y, ctx) {
@@ -224,6 +239,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     function update_sources() {
         ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+
+        ctxSVG.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
         point_sources.forEach((source)=>{
             let step = 2 * Math.PI / parseInt(density_value.innerHTML, 10);
             for (let i = 0; i < 2 * Math.PI; i += step) {
@@ -236,6 +253,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         rays.forEach((source)=>{
             ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
             draw_point(source[0].x, source[0].y, ctx1);
+
+            ctxSVG.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+            draw_point(source[0].x, source[0].y, ctxSVG);
             renderRay(source);
         });
         beams.forEach((source)=>{
@@ -246,6 +266,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
             ctx1.lineTo(source[1].x, source[1].y);
             ctx1.stroke();
             ctx1.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+
+            draw_point(source[0].x, source[0].y, ctxSVG);
+            draw_point(source[1].x, source[1].y, ctxSVG);
+            ctxSVG.strokeStyle = "gray"
+            ctxSVG.moveTo(source[0].x, source[0].y);
+            ctxSVG.lineTo(source[1].x, source[1].y);
+            ctxSVG.stroke();
+            ctxSVG.strokeStyle = `rgba(255, 255, 255, ${brightness/100})`;
+            
             let numOfRays = parseInt(density_value.innerHTML, 10);
             let vector = {
                 x: (source[1].x - source[0].x) / numOfRays,
@@ -282,6 +311,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     function renderAll() {
         ctx1.clearRect(0, 0, layer1.width, layer2.height);
+        ctxSVG.clearRect(0, 0, layer1.width, layer2.height);
         update_sources();
         render_flat_mirrors();
         render_obstacles();
@@ -313,10 +343,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
         });
         ctx1.beginPath();
+        ctxSVG.beginPath();
+        
         if(minIntersect) {
             ctx1.moveTo(ray[0].x, ray[0].y);
             ctx1.lineTo(minIntersect.x, minIntersect.y);
             ctx1.stroke();
+
+            ctxSVG.moveTo(ray[0].x, ray[0].y);
+            ctxSVG.lineTo(minIntersect.x, minIntersect.y);
+            ctxSVG.stroke();
             if(currentMirror) {
                 let n = getNormalVector({
                     x:currentMirror[1].x - currentMirror[0].x,
@@ -356,6 +392,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
             ctx1.moveTo(ray[0].x, ray[0].y);
             ctx1.lineTo(ray[1].x, ray[1].y);
             ctx1.stroke();
+
+            ctxSVG.moveTo(ray[0].x, ray[0].y);
+            ctxSVG.lineTo(ray[1].x, ray[1].y);
+            ctxSVG.stroke();
         }
     }
 
@@ -436,6 +476,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function createSvg() {
         var mySerializedSVG = ctxSVG.getSerializedSvg();
         var svg = ctxSVG.getSvg();
-        return svg.outerHTML;
+        return svg.outerHTML.slice(0, 5) + "style=\"background-color:black\"" + svg.outerHTML.slice(4);
     }
 });
