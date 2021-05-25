@@ -31,7 +31,8 @@ ul {
 .canvas,
 .logo,
 ul,
-.slidecontainer {
+.slidecontainer,
+#saveButton {
   display: flex;
   flex-shrink: 0;
 }
@@ -157,4 +158,20 @@ ul,
 .content .slidecontainer #density_value,
 .content .slidecontainer #brightness_value {
   padding: 0 0 2px 5px;
+}
+.content #saveButton {
+  margin: auto;
+  width: 80%;
+  justify-content: center;
+  color: white;
+  background: indigo;
+  font-size: 25px;
+  font-weight: bold;
+  margin-top: 35px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: 0.4s;
+}
+.content #saveButton:hover {
+  background: black;
 }

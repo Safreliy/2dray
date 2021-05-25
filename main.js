@@ -1,4 +1,6 @@
+//import CanvasSVG from "canvas-svg/trunk/canvas-getsvg";
 document.addEventListener("DOMContentLoaded", function(event) {
+
     let mode;
     let brightness = 50;
     let first_step_obstacle = false;
@@ -23,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let canvas_wrapper = document.getElementsByClassName('canvas');
     let layer1 = document.getElementById('layer1');
     let layer2 = document.getElementById('layer2');
+
     let ctx1 = layer1.getContext("2d");
     let ctx2 = layer2.getContext("2d");
 
@@ -34,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     let coll_lens_btn = document.getElementById("coll_lens");
     let diff_lens_btn = document.getElementById("diff_lens");
     let obstacle_btn = document.getElementById("obstacle");
+    let save_btn = document.getElementById("saveButton");
 
 
     ray_btn.addEventListener("mouseup", (event)=>{mode=1});
@@ -43,7 +47,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     coll_lens_btn.addEventListener("mouseup", (event)=>{mode=5});
     diff_lens_btn.addEventListener("mouseup", (event)=>{mode=6});
     obstacle_btn.addEventListener("mouseup", (event)=>{mode=7});
-
+    save_btn.addEventListener("mouseup", (event)=>{
+        //download(createSvg(), "image", "image/svg+xml");
+        download(createSvg(), "image", "text/html");
+    });
     let canvas_offset = layer1.getBoundingClientRect();
 
 
@@ -55,6 +62,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     layer1.height = height;
     layer2.width = width;
     layer2.height = height;
+
+    let ctxSVG = new C2S(width,height);
 
     add_borders();
 
@@ -172,6 +181,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function render_obstacles() {
+        ctxSVG.beginPath();
+        ctxSVG.strokeStyle = `red`;
+
         ctx1.beginPath();
         ctx1.strokeStyle = `red`;
         obstacles.forEach((obstacle)=>{
@@ -179,8 +191,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
            draw_point(obstacle[1].x, obstacle[1].y, ctx1);
            ctx1.moveTo(obstacle[0].x, obstacle[0].y);
            ctx1.lineTo(obstacle[1].x, obstacle[1].y);
+            draw_point(obstacle[0].x, obstacle[0].y, ctxSVG);
+            draw_point(obstacle[1].x, obstacle[1].y, ctxSVG);
+            ctxSVG.moveTo(obstacle[0].x, obstacle[0].y);
+            ctxSVG.lineTo(obstacle[1].x, obstacle[1].y);
         });
         ctx1.stroke();
+        ctxSVG.stroke();
     }
 
     function render_flat_mirrors() {
@@ -396,5 +413,29 @@ document.addEventListener("DOMContentLoaded", function(event) {
         } else {
             return;
         }
+    }
+
+    function download(data, filename, type) {
+        let file = new Blob([data], {type: type});
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+            window.navigator.msSaveOrOpenBlob(file, filename);
+        else { // Others
+            let a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
+    }
+
+    function createSvg() {
+        var mySerializedSVG = ctxSVG.getSerializedSvg();
+        var svg = ctxSVG.getSvg();
+        return svg.outerHTML;
     }
 });

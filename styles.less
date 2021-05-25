@@ -30,7 +30,7 @@ ul {
   padding-left: 10px;
 }
 
-.content, .sidebar, .canvas, .logo, ul, .slidecontainer{
+.content, .sidebar, .canvas, .logo, ul, .slidecontainer, #saveButton {
   display: flex;
   flex-shrink: 0;
 }
@@ -163,6 +163,23 @@ ul {
 
     #density_value,#brightness_value {
       padding: 0 0 2px 5px;
+    }
+  }
+
+  #saveButton {
+    margin:auto;
+    width: 80%;
+    justify-content: center;
+    color: white;
+    background: indigo;
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 35px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: 0.4s;
+    &:hover {
+      background: black;
     }
   }
 
